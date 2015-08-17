@@ -30,8 +30,6 @@ class ChunkHandler(server.SimpleHTTPRequestHandler):
         range_specified, range_start = self._parse_range()
         file_size = path.getsize(file_path)
 
-        print("the path {0} size {1}".format(self.path, file_size))
-
         if range_specified:
             self.send_response(206)
             self.send_header(
