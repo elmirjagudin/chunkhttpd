@@ -14,11 +14,11 @@ class ChunkHandler(server.SimpleHTTPRequestHandler):
         if range_header is None:
             return no_header
 
-        mo = re.match("bytes=(\d*)-", range_header)
-        if mo is None:
+        match = re.match(r"bytes=(\d*)-", range_header)
+        if match is None:
             return no_header
 
-        return True, int(mo.group(1))
+        return True, int(match.group(1))
 
     def do_GET(self):
         file_path = self.translate_path(self.path)
@@ -40,14 +40,14 @@ class ChunkHandler(server.SimpleHTTPRequestHandler):
         else:
             self.send_response(200)
 
-        fo = open(file_path, mode="rb")
-        fo.seek(range_start)
+        requested_file = open(file_path, mode="rb")
+        requested_file.seek(range_start)
 
         self.send_header("Content-type", "text/plain")
         self.send_header("Content-Length", file_size)
         self.end_headers()
 
-        self.wfile.write(fo.read(self.server.chunk_size))
+        self.wfile.write(requested_file.read(self.server.chunk_size))
 
 
 class ChunkServer(socketserver.ThreadingTCPServer):
