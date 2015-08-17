@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Simple HTTP daemon, that serves the content in chunks, Have simple
+Simple HTTP daemon, that serves the content in chunks. Have simple
 support for 'Range' header, to allow resuming downloads.
 
 Allows to emulate issues with downloading large files over HTTP, where
