@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+"""
+Simple HTTP daemon, that serves the content in chunks, Have simple
+support for 'Range' header, to allow resuming downloads.
+
+Allows to emulate issues with downloading large files over HTTP, where
+connection is lost before the complete file is transmitted.
+"""
+
+
 from os import path
 from http import server
 import argparse
@@ -8,7 +17,20 @@ import re
 
 
 class ChunkHandler(server.SimpleHTTPRequestHandler):
+    """
+    Extends the SimpleHTTPRequestHandler to only serve
+    at most the specified chunk size.
+
+    Also handle 'Range' header, to allow resuming uploads.
+    """
     def _parse_range(self):
+        """
+        Parse 'Range' request header.
+
+        :return: (False, 0) if no 'Range' header is specified
+                 (True, start) if 'Range' header is specified,
+                               start is the first byte of the content requested
+        """
         no_header = (False, 0)
         range_header = self.headers.get("Range")
         if range_header is None:
@@ -51,6 +73,10 @@ class ChunkHandler(server.SimpleHTTPRequestHandler):
 
 
 class ChunkServer(socketserver.ThreadingTCPServer):
+    """
+    Override ThreadingTCPServer so that we can pass on the chunk size
+    setting to our request handler.
+    """
     def __init__(self, server_address, RequestHandlerClass, chunk_size):
         socketserver.ThreadingTCPServer.__init__(self,
                                                  server_address,
@@ -59,6 +85,9 @@ class ChunkServer(socketserver.ThreadingTCPServer):
 
 
 def parse_args():
+    """
+    Parse command line arguments.
+    """
     parser = argparse.ArgumentParser(description="Chunked up HTTP responses")
     parser.add_argument("-p", "--port", dest="port", type=int, default=8000,
                         help="The port to listen on.")
