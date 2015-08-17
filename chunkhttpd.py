@@ -98,14 +98,20 @@ def parse_args():
 
     return parser.parse_args()
 
-args = parse_args()
 
-httpd = ChunkServer(("", args.port), ChunkHandler, args.chunk_size)
+def main():
+    """
+    parse argument, handle requested we get interrupt signal
+    """
+    args = parse_args()
+    httpd = ChunkServer(("", args.port), ChunkHandler, args.chunk_size)
 
-try:
-    print("serving at port {0}, chunk size: {1} bytes.".format(
-        args.port, args.chunk_size))
+    try:
+        print("serving at port {0}, chunk size: {1} bytes.".format(
+            args.port, args.chunk_size))
 
-    httpd.serve_forever()
-except KeyboardInterrupt:
-    httpd.shutdown()
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        httpd.shutdown()
+
+main()
