@@ -66,7 +66,7 @@ class ChunkHandler(server.SimpleHTTPRequestHandler):
         requested_file.seek(range_start)
 
         self.send_header("Content-type", "text/plain")
-        self.send_header("Content-Length", file_size)
+        self.send_header("Content-Length", file_size - range_start)
         self.end_headers()
 
         self.wfile.write(requested_file.read(self.server.chunk_size))
