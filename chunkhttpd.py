@@ -77,6 +77,8 @@ class ChunkServer(socketserver.ThreadingTCPServer):
     Override ThreadingTCPServer so that we can pass on the chunk size
     setting to our request handler.
     """
+    allow_reuse_address = True
+
     def __init__(self, server_address, RequestHandlerClass, chunk_size):
         socketserver.ThreadingTCPServer.__init__(self,
                                                  server_address,
